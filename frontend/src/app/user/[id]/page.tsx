@@ -10,32 +10,56 @@ import {
   TableCell,
 } from '@nextui-org/table';
 
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  useDisclosure,
+  Input,
+} from '@nextui-org/react';
+
 export default function UserPage() {
   const { id } = useParams();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
   return (
     <main className="flex h-screen">
       <div className=" w-96 bg-gray-300">
-        <h1 className="text-gray-800 font-bold text-3xl p-6">Olá Matheus</h1>
-        <h2 className="text-gray-800 text-2xl p-6">Seus grupos</h2>
+        <div className="p-6 space-y-8">
+          <h1 className="text-gray-800 font-bold text-3xl">Olá Matheus</h1>
+          <h2 className="text-gray-800 text-2xl">Seus grupos</h2>
 
-        <div className="space-y-8 h-[30rem] overflow-y-scroll">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
-            <div
-              key={index}
-              className="bg-gray-600 w-auto h-16 mx-6 rounded flex justify-between p-4 items-center"
+          <div className="space-y-8 h-[30rem] overflow-y-scroll">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-600 w-auto h-16 rounded flex justify-between p-4 items-center"
+              >
+                <h3 className="text-gray-100 text-1xl">Grupo {index + 1}</h3>
+                <span className="text-gray-100 text-1xl">
+                  5 pessoas cadastradas
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex items-center justify-center">
+            <Button
+              onPress={onOpen}
+              className="py-4 px-8 rounded bg-gray-600 text-gray-200 flex-1"
+              type="submit"
             >
-              <h3 className="text-gray-100 text-1xl">Grupo {index + 1}</h3>
-              <span className="text-gray-100 text-1xl">
-                5 pessoas cadastradas
-              </span>
-            </div>
-          ))}
+              CRIAR GRUPO
+            </Button>
+          </div>
         </div>
       </div>
 
       <div className="flex flex-1 items-center justify-center">
-        <div className="h-[30rem] w-[40rem]">
+        <div className="w-[40rem]">
           <Table isStriped aria-label="Example static collection table">
             <TableHeader className="bg-gray-600" w-full h-full>
               <TableColumn>NOME</TableColumn>
@@ -65,6 +89,45 @@ export default function UserPage() {
           </Table>
         </div>
       </div>
+
+      <Modal size="xs" isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1 text-2xl">
+                Crie um novo grupo
+              </ModalHeader>
+              <ModalBody className="flexw-full h-64 flex-wrap md:flex-nowrap gap-4">
+                <div className="flex flex-col w-full flex-wrap md:flex-nowrap gap-4">
+                  <label className="flex flex-col">
+                    Qual o nome do grupo?
+                    <input
+                      className="mt-4 px-4 py-2 border-solid border-2 border-gray-800/50 rounded"
+                      type="text"
+                    />
+                  </label>
+
+                  <label className="flex flex-col">
+                    Anexe um arquivo com as informações do teu grupo
+                    <input
+                      className="mt-4 px-4 py-2"
+                      type="file"
+                    />
+                  </label>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="light" onPress={onClose}>
+                  Fechar
+                </Button>
+                <Button className="text-gray-900" onPress={onClose}>
+                  Enviar
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
     </main>
   );
 }
