@@ -1,0 +1,26 @@
+### list users
+
+GET http://localhost:3333/users
+
+### get users
+GET http://localhost:3333/users/user_F5MDmOnBVYs05oRlF4t2_
+
+### create users
+POST http://localhost:3333/users
+Content-Type: application/json
+
+{
+  "email": "victormatheus507@gmail.com",
+  "password": "1234"
+}
+
+### update users
+PATCH http://localhost:3333/users/1
+Content-Type: application/json
+
+{
+  "email": "victormatheus508@gmail.com"
+}
+
+### delete users
+DELETE http://localhost:3333/users/user_F5MDmOnBVYs05oRlF4t2_

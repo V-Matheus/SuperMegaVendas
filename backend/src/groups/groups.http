@@ -1,0 +1,26 @@
+### list groups
+
+GET http://localhost:3333/groups
+
+### get groups
+GET http://localhost:3333/groups/user_F5MDmOnBVYs05oRlF4t2_
+
+### create groups
+POST http://localhost:3333/groups
+Content-Type: application/json
+
+{
+  "name": "Grupo 1",
+  "userId": "user_JZcWC8N46wFCZyU1IMivC"
+}
+
+### update groups
+PATCH http://localhost:3333/groups/group_RimlLCLOehpfWd6xZHYQI
+Content-Type: application/json
+
+{
+  "name": "Grupo 2"
+}
+
+### delete groups
+DELETE http://localhost:3333/groups/group_RimlLCLOehpfWd6xZHYQI
