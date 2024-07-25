@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
@@ -9,32 +9,39 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly repository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
   ) {}
 
-  create(dto: CreateUserDto) {
-    const user = this.repository.create(dto);
-    return this.repository.save(user);
+  async create(dto: CreateUserDto) {
+    const { email } = dto;
+
+    const existingUser = await this.usersRepository.findOneBy({ email });
+    if (existingUser) {
+      throw new ConflictException(`User with email ${email} already exists`);
+    }
+
+    const user = this.usersRepository.create(dto);
+    return this.usersRepository.save(user);
   }
 
-  findAll(): Promise<User[]>  {
-    return this.repository.find();
+  findAll() {
+    return this.usersRepository.find();
   }
 
-  findOne(id: string)  {
-    return this.repository.findOneBy({ id });
+  findOne(id: string) {
+    return this.usersRepository.findOneBy({ id });
   }
 
-  async update(id: string, dto: UpdateUserDto)  {
-    const user = await this.repository.findOneBy({ id });
+  async update(id: string, dto: UpdateUserDto) {
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) return null;
-    this.repository.merge(user, dto);
-    return this.repository.save(user);
+    this.usersRepository.merge(user, dto);
+    return this.usersRepository.save(user);
   }
 
   async remove(id: string) {
-    const user = await this.repository.findOneBy({ id });
+    const user = await this.usersRepository.findOneBy({ id });
     if (!user) return null;
-    return this.repository.remove(user);
+    return this.usersRepository.remove(user);
   }
 }

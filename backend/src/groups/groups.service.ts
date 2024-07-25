@@ -38,19 +38,22 @@ export class GroupsService {
 
   async update(id: string, dto: UpdateGroupDto) {
     await this.groupsRepository.update(id, dto);
-    const updatedGroup = await this.groupsRepository.findOne({
+    const group = await this.groupsRepository.findOne({
       where: { id },
       relations: ['user'],
     });
-    if (!updatedGroup) {
+    if (!group) {
       throw new NotFoundException(`Group with ID ${id} not found`);
     }
-    return updatedGroup;
+    this.groupsRepository.merge(group, dto);
+    return this.groupsRepository.save(group);
   }
 
   async remove(id: string) {
     const group = await this.groupsRepository.findOneBy({ id });
-    if (!group) null
+    if (!group) {
+      throw new NotFoundException(`Group with ID ${id} not found`);
+    }
     return this.groupsRepository.remove(group);
   }
 }

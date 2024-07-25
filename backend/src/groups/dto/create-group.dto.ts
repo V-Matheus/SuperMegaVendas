@@ -2,8 +2,8 @@ import { IsString } from 'class-validator';
 
 export class CreateGroupDto {
   @IsString()
-  name: string;
+  name: String;
 
   @IsString()
-  userId: string
+  userId: String
 }

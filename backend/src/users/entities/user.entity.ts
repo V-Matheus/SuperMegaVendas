@@ -14,7 +14,7 @@ export class User {
   @PrimaryColumn()
   id: String;
 
-  @Column()
+  @Column({unique: true})
   email: String;
 
   @Column()

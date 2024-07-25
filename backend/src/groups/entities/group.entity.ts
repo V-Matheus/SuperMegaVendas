@@ -1,9 +1,11 @@
+import { Contact } from 'src/contacts/entities/contact.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   BeforeInsert,
   Column,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryColumn,
 } from 'typeorm';
 
@@ -15,7 +17,10 @@ export class Group {
   id: String;
 
   @Column()
-  name: string;
+  name: String;
+
+  @OneToMany(() => Contact, (contact) => contact.group)
+  contacts: Contact[];
 
   @ManyToOne(() => User, (user) => user.groups)
   user: User;

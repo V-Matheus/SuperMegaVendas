@@ -23,4 +23,4 @@ Content-Type: application/json
 }
 
 ### delete users
-DELETE http://localhost:3333/users/user_F5MDmOnBVYs05oRlF4t2_
+DELETE http://localhost:3333/users/user_-sue61EBYQL-KKJRh-yyI

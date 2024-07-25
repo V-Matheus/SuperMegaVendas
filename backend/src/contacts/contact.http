@@ -1,0 +1,27 @@
+### list contacts
+
+GET http://localhost:3333/contacts
+
+### get contacts
+GET http://localhost:3333/contacts/user_F5MDmOnBVYs05oRlF4t2_
+
+### create contacts
+POST http://localhost:3333/contacts
+Content-Type: application/json
+
+{
+  "name": "Matheus",
+  "phoneNumber": "5584988596033",
+  "groupId": "group_ETztwizcHf-3iaX-_mlZw"
+}
+
+### update contacts
+PATCH http://localhost:3333/contacts/contact_74ra3EMWbhFy0q7iu4Ov7
+Content-Type: application/json
+
+{
+  "name": "Victor"
+}
+
+### delete contacts
+DELETE http://localhost:3333/contacts/contact_5TrQ6YbtPy4UD9SVXNTTL
