@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Group } from './entities/group.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
+import { Contact } from 'src/contacts/entities/contact.entity';
+import { ContactsService } from 'src/contacts/contacts.service';
 
 @Injectable()
 export class GroupsService {
@@ -13,6 +15,8 @@ export class GroupsService {
     private groupsRepository: Repository<Group>,
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    @InjectRepository(Contact)
+    private contactsService: ContactsService,
   ) {}
 
   async create(dto: CreateGroupDto) {
@@ -26,13 +30,13 @@ export class GroupsService {
   }
 
   findAll() {
-    return this.groupsRepository.find({ relations: ['user'] });
+    return this.groupsRepository.find({ relations: ['user', 'contacts'] });
   }
 
   findOne(id: string) {
     return this.groupsRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'contacts'],
     });
   }
 
@@ -40,7 +44,7 @@ export class GroupsService {
     await this.groupsRepository.update(id, dto);
     const group = await this.groupsRepository.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'contacts'],
     });
     if (!group) {
       throw new NotFoundException(`Group with ID ${id} not found`);

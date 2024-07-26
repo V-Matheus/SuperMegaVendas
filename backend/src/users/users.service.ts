@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
@@ -11,7 +15,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private groupsRepository: GroupsService,
+    private groupsService: GroupsService,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -43,6 +47,10 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
+
+    const groupsWithContacts = await this.groupsService.findAll();
+
+    user.groups = groupsWithContacts.filter((group) => group.user.id === id);
 
     return user;
   }

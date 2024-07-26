@@ -10,9 +10,9 @@ POST http://localhost:3333/contacts
 Content-Type: application/json
 
 {
-  "name": "Matheus",
+  "name": "victor",
   "phoneNumber": "5584988596033",
-  "groupId": "group_ETztwizcHf-3iaX-_mlZw"
+  "groupId": "group_boeeTLrSP4onNXyADhwxc"
 }
 
 ### update contacts
