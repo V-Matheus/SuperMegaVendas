@@ -14,7 +14,7 @@ httpClient.interceptors.response.use(
   (response) => {
     const userId = window.localStorage.getItem('userId');
 
-    if (userId) {
+    if (!userId) {
       window.location.href = '/';
     }
 

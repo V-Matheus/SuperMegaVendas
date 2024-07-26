@@ -1,4 +1,3 @@
-import { AxiosInstance } from 'axios';
 import { httpClient } from '.';
 
 interface LoginParams {
@@ -6,14 +5,12 @@ interface LoginParams {
   password: string;
 }
 
-export const login = async ({ email, password }: LoginParams) => {
+export const login = async () => {
   let erros = null;
-  const id = window.localStorage.getItem('id');
+  const userId = window.localStorage.getItem('userId');
+  window.location.href = `/user/${userId}`;
 
-  const response = await httpClient.post(`/users/${id}`, {
-    email,
-    password,
-  });
+  const response = await httpClient.get(`/users/${userId}`);
 
   if (!response.data) {
     erros = {

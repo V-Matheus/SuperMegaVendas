@@ -8,7 +8,7 @@ interface RegisterParams {
 
 export const register = async ({ email, password }: RegisterParams) => {
   let erros = null;
-  const response = await httpClient.post('/users', {
+  const response = await httpClient.post('/user', {
     email,
     password,
   });

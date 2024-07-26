@@ -1,12 +1,12 @@
 ### list users
 
-GET http://localhost:3333/users
+GET http://localhost:3333/user
 
 ### get users
-GET http://localhost:3333/users/user_mg0NtPt9XZRZAz12I02g
+GET http://localhost:3333/user/user_YO-Q4bC0rE8TocAZY7D7g
 
 ### create users
-POST http://localhost:3333/users
+POST http://localhost:3333/user
 Content-Type: application/json
 
 {
@@ -15,7 +15,7 @@ Content-Type: application/json
 }
 
 ### update users
-PATCH http://localhost:3333/users/1
+PATCH http://localhost:3333/user/1
 Content-Type: application/json
 
 {
@@ -23,4 +23,5 @@ Content-Type: application/json
 }
 
 ### delete users
-DELETE http://localhost:3333/users/user_g1Ggv_j_0Mr5ZxMTrSyGd
+DELETE http://localhost:3333/user/user_8mbOMYGrZImFC-vpFwXAh
+
