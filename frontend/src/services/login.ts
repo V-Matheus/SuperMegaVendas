@@ -10,6 +10,8 @@ export const login = async () => {
   const userId = window.localStorage.getItem('userId');
   window.location.href = `/user/${userId}`;
 
+  if (!userId) window.location.href = '/';
+
   const response = await httpClient.get(`/users/${userId}`);
 
   if (!response.data) {

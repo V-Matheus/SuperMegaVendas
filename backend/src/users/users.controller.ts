@@ -29,7 +29,7 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    const user = await this.usersService.findOne(id);
+    const user = await this.usersService.findOneWithGroups(id);
     if (!user) throw new NotFoundException();
     return user;
   }

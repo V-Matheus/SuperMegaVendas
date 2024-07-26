@@ -1,15 +1,17 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { GroupsService } from 'src/groups/groups.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private usersRepository: Repository<User>,
+    private groupsRepository: GroupsService,
   ) {}
 
   async create(dto: CreateUserDto) {
@@ -30,6 +32,19 @@ export class UsersService {
 
   findOne(id: string) {
     return this.usersRepository.findOneBy({ id });
+  }
+
+  async findOneWithGroups(id: string): Promise<User | null> {
+    const user = await this.usersRepository.findOne({
+      where: { id },
+      relations: ['groups'],
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    return user;
   }
 
   async update(id: string, dto: UpdateUserDto) {

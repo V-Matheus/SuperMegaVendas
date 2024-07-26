@@ -3,7 +3,7 @@
 GET http://localhost:3333/groups
 
 ### get groups
-GET http://localhost:3333/groups/user_F5MDmOnBVYs05oRlF4t2_
+GET http://localhost:3333/groups/group_zGC4RQcQQBNu6PRCPNuHi
 
 ### create groups
 POST http://localhost:3333/groups
@@ -11,7 +11,7 @@ Content-Type: application/json
 
 {
   "name": "Grupo 1",
-  "userId": "user_mg0NtPt9XZRZAzD12I02g"
+  "userId": "user_6K8bVkoVb1vgOQrj9EpTG"
 }
 
 ### update groups

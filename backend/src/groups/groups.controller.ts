@@ -29,8 +29,8 @@ export class GroupsController {
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const group = await this.groupsService.findOne(id);
-    if (!group) throw new NotFoundException();
-    return group;
+    if (!group) return []
+    return this.groupsService.findOne(id)
   }
 
   @Patch(':id')

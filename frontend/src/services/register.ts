@@ -22,5 +22,5 @@ export const register = async ({ email, password }: RegisterParams) => {
     };
   }
 
-  return { data: response, erros };
+  return { data: response.data, erros };
 };

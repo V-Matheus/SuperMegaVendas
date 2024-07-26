@@ -20,20 +20,44 @@ import {
   useDisclosure,
   Input,
 } from '@nextui-org/react';
+import { useEffect, useState } from 'react';
+import { getGroups } from '@/services/getGroups';
 
 export default function UserPage() {
   const { id } = useParams();
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [groups, setGroups] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data, erros } = await getGroups(id);
+        console.log(data);
+        
+
+        if (erros) {
+          throw new Error(erros.statusText);
+        }
+
+        setGroups(data)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (id) {
+      fetchData();
+    }
+  }, [id]);
 
   return (
     <main className="flex h-screen">
       <div className=" w-96 bg-gray-300">
-        <div className="p-6 space-y-8">
-          <h1 className="text-gray-800 font-bold text-3xl">Olá Matheus</h1>
+        <div className="p-6 space-y-12">
           <h2 className="text-gray-800 text-2xl">Seus grupos</h2>
 
           <div className="space-y-8 h-[30rem] overflow-y-scroll">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
+            {groups.map((grupo, index) => (
               <div
                 key={index}
                 className="bg-gray-600 w-auto h-16 rounded flex justify-between p-4 items-center"
@@ -109,10 +133,7 @@ export default function UserPage() {
 
                   <label className="flex flex-col">
                     Anexe um arquivo com as informações do teu grupo
-                    <input
-                      className="mt-4 px-4 py-2"
-                      type="file"
-                    />
+                    <input className="mt-4 px-4 py-2" type="file" />
                   </label>
                 </div>
               </ModalBody>
