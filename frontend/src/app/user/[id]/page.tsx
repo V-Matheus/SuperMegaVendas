@@ -42,7 +42,6 @@ export default function UserPage() {
     const fetchData = async () => {
       try {
         const { data, erros } = await getGroups(userId);
-        console.log(data);
 
         if (erros) {
           throw new Error(erros.statusText);
@@ -65,7 +64,6 @@ export default function UserPage() {
         throw new Error(erros.statusText);
       }
 
-      // setGroups(data);
     } catch (error) {
       console.error(error);
     }
