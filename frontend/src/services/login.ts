@@ -1,10 +1,5 @@
 import { httpClient } from '.';
 
-interface LoginParams {
-  email: string;
-  password: string;
-}
-
 export const login = async () => {
   let erros = null;
   const userId = window.localStorage.getItem('userId');

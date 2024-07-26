@@ -20,7 +20,7 @@ import {
 } from '@nextui-org/react';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { createGroup } from '@/services/createGroup';
-import { Groupo } from '@/services/types';
+import { Groupo, Contacto } from '@/services/types';
 import { switchFiles } from '@/helpers/switchFiles';
 import { getInfoUser } from '@/services/getInfoUser';
 import { createContact } from '@/services/createContact';
@@ -30,8 +30,8 @@ export default function UserPage() {
   const [groups, setGroups] = useState<Groupo[]>([]);
   const [name, setName] = useState('');
   const [file, setFile] = useState<File | null>(null);
-  const [groupIdActive, setGroupIdActive] = useState('');
-  const [dados, setDados] = useState([]);
+  const [groupIdActive, setGroupIdActive] = useState<string>('');
+  const [dados, setDados] = useState<Groupo[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,7 +57,7 @@ export default function UserPage() {
 
   async function handleCreateGroup() {
     try {
-      let contacts: any[] = [];
+      let contacts: Contacto[] = [];
       if (file) {
         contacts = await switchFiles({
           target: { files: [file] },
@@ -67,13 +67,21 @@ export default function UserPage() {
         name,
       });
 
+      if (errosGroup) {
+        throw new Error(errosGroup.statusText);
+      }
+
       window.localStorage.setItem('groupId', dataGroup.id);
 
       const { data: dataContact, erros: errosContact } = await createContact(
         contacts,
       );
 
-      const newGroupWithContacts = {
+      if (errosContact) {
+        throw new Error(errosContact.statusText);
+      }
+
+      const newGroupWithContacts: Groupo = {
         ...dataGroup,
         contacts: dataContact,
       };
@@ -81,12 +89,6 @@ export default function UserPage() {
       setGroups((prevGroups) => [...prevGroups, newGroupWithContacts]);
       setGroupIdActive(dataGroup.id);
 
-      if (errosGroup) {
-        throw new Error(errosGroup.statusText);
-      }
-      if (errosContact) {
-        throw new Error(errosContact.statusText);
-      }
     } catch (error) {
       console.error(error);
     }
@@ -140,16 +142,14 @@ export default function UserPage() {
               <TableColumn>NOME</TableColumn>
               <TableColumn>NÚMERO</TableColumn>
             </TableHeader>
-            <TableBody
-              emptyContent={'Nenhum contato nesse grupo.'}
-            >
+            <TableBody emptyContent={'Nenhum contato nesse grupo.'}>
               {filteredGroups.flatMap((group) =>
                 group.contacts.map((contact) => (
                   <TableRow key={contact.phoneNumber}>
                     <TableCell>{contact.name}</TableCell>
                     <TableCell>{contact.phoneNumber}</TableCell>
                   </TableRow>
-                ))
+                )),
               )}
             </TableBody>
           </Table>
