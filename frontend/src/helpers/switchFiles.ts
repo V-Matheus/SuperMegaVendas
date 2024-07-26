@@ -8,7 +8,7 @@ interface Contact {
   phoneNumber: string;
 }
 
-function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
+export function switchFiles(event: ChangeEvent<HTMLInputElement>): Promise<Contact[]> | void {
   const file = event.target.files?.[0];
 
   if (file) {
@@ -21,7 +21,6 @@ function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
         convertFunction = convertXlsx;
         break;
       case 'text/csv':
-      case 'text/plain':
         convertFunction = convertCsv;
         break;
       case 'text/plain':
@@ -32,10 +31,14 @@ function handleFileUpload(event: ChangeEvent<HTMLInputElement>) {
         return;
     }
 
-    convertFunction(file)
+    return convertFunction(file)
       .then(data => {
         console.log('Contatos importados:', data);
+        return data;
       })
-      .catch(error => console.error('Erro ao processar arquivo:', error));
+      .catch(error => {
+        console.error('Erro ao processar arquivo:', error);
+        return [];
+      });
   }
 }

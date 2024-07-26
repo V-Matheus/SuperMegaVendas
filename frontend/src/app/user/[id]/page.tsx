@@ -20,16 +20,20 @@ import {
   useDisclosure,
   Input,
 } from '@nextui-org/react';
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { getGroups } from '@/services/getGroups';
 import { createGroup } from '@/services/createGroup';
 import { Groupo } from '@/services/types';
+import { switchFiles } from '@/helpers/switchFiles';
 
 export default function UserPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [groups, setGroups] = useState<Groupo[]>([]);
   const [name, setName] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+
+  console.log(file);
 
   useEffect(() => {
     const storedUserId = window.localStorage.getItem('userId');
@@ -57,15 +61,32 @@ export default function UserPage() {
 
   async function handleCreateGroup() {
     try {
+      let contacts: any[] = [];
+      if (file) {
+        contacts = await switchFiles({
+          target: { files: [file] },
+        } as ChangeEvent<HTMLInputElement>);
+      }
+
+      console.log('Contatos importados:', contacts);
+
       const { data, erros } = await createGroup({ name, userId });
+
       setGroups((prevGroups) => [...prevGroups, data]);
 
       if (erros) {
         throw new Error(erros.statusText);
       }
-
     } catch (error) {
       console.error(error);
+    }
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const selectedFile = event.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      console.log(file);
     }
   }
 
@@ -153,7 +174,11 @@ export default function UserPage() {
 
                   <label className="flex flex-col">
                     Anexe um arquivo com as informações do teu grupo
-                    <input className="mt-4 px-4 py-2" type="file" />
+                    <input
+                      onChange={handleFileChange}
+                      className="mt-4 px-4 py-2"
+                      type="file"
+                    />
                   </label>
                 </div>
               </ModalBody>
