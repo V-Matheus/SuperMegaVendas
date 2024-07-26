@@ -33,7 +33,6 @@ export function switchFiles(event: ChangeEvent<HTMLInputElement>): Promise<Conta
 
     return convertFunction(file)
       .then(data => {
-        console.log('Contatos importados:', data);
         return data;
       })
       .catch(error => {

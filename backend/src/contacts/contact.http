@@ -3,7 +3,7 @@
 GET http://localhost:3333/contacts
 
 ### get contacts
-GET http://localhost:3333/contacts/user_F5MDmOnBVYs05oRlF4t2_
+GET http://localhost:3333/contacts/group_boeeTLrSP4onNXyADhwxc
 
 ### create contacts
 POST http://localhost:3333/contacts
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### update contacts
-PATCH http://localhost:3333/contacts/contact_74ra3EMWbhFy0q7iu4Ov7
+PATCH http://localhost:3333/contacts/group_boeeTLrSP4onNXyADhwxc
 Content-Type: application/json
 
 {
@@ -24,4 +24,4 @@ Content-Type: application/json
 }
 
 ### delete contacts
-DELETE http://localhost:3333/contacts/contact_wbIMtRUuxp5ySIz7GjvFo
+DELETE http://localhost:3333/contacts/contact__ogjqxwO68T6nrbfoekdF"

@@ -1,6 +1,5 @@
 'use client';
 
-import { useParams } from 'next/navigation';
 import {
   Table,
   TableHeader,
@@ -18,46 +17,43 @@ import {
   ModalFooter,
   Button,
   useDisclosure,
-  Input,
 } from '@nextui-org/react';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { getGroups } from '@/services/getGroups';
 import { createGroup } from '@/services/createGroup';
 import { Groupo } from '@/services/types';
 import { switchFiles } from '@/helpers/switchFiles';
+import { getInfoUser } from '@/services/getInfoUser';
+import { createContact } from '@/services/createContact';
 
 export default function UserPage() {
-  const [userId, setUserId] = useState<string | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [groups, setGroups] = useState<Groupo[]>([]);
   const [name, setName] = useState('');
   const [file, setFile] = useState<File | null>(null);
-
-  console.log(file);
-
-  useEffect(() => {
-    const storedUserId = window.localStorage.getItem('userId');
-    if (storedUserId) {
-      setUserId(storedUserId);
-    }
-  }, []);
+  const [groupIdActive, setGroupIdActive] = useState('');
+  const [dados, setDados] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data, erros } = await getGroups(userId);
+        const { data, erros } = await getInfoUser();
+        setDados(data);
 
         if (erros) {
           throw new Error(erros.statusText);
         }
 
-        setGroups((prevGroups) => [...prevGroups, data]);
+        setGroups(data);
       } catch (error) {
         console.error(error);
       }
-      fetchData();
     };
-  }, [userId]);
+    fetchData();
+  }, [groupIdActive]);
+
+  useEffect(() => {
+    window.localStorage.setItem('groupId', groupIdActive);
+  }, [groupIdActive]);
 
   async function handleCreateGroup() {
     try {
@@ -67,15 +63,29 @@ export default function UserPage() {
           target: { files: [file] },
         } as ChangeEvent<HTMLInputElement>);
       }
+      const { data: dataGroup, erros: errosGroup } = await createGroup({
+        name,
+      });
 
-      console.log('Contatos importados:', contacts);
+      window.localStorage.setItem('groupId', dataGroup.id);
 
-      const { data, erros } = await createGroup({ name, userId });
+      const { data: dataContact, erros: errosContact } = await createContact(
+        contacts,
+      );
 
-      setGroups((prevGroups) => [...prevGroups, data]);
+      const newGroupWithContacts = {
+        ...dataGroup,
+        contacts: dataContact,
+      };
 
-      if (erros) {
-        throw new Error(erros.statusText);
+      setGroups((prevGroups) => [...prevGroups, newGroupWithContacts]);
+      setGroupIdActive(dataGroup.id);
+
+      if (errosGroup) {
+        throw new Error(errosGroup.statusText);
+      }
+      if (errosContact) {
+        throw new Error(errosContact.statusText);
       }
     } catch (error) {
       console.error(error);
@@ -86,25 +96,27 @@ export default function UserPage() {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      console.log(file);
     }
   }
 
+  const filteredGroups = groups.filter((group) => group.id === groupIdActive);
+
   return (
-    <main className="flex h-screen">
-      <div className=" w-96 bg-gray-300">
+    <main className="flex flex-col-reverse lg:flex-row space-y-4 h-screen">
+      <div className="w-full lg:w-96 bg-gray-300">
         <div className="p-6 space-y-12">
           <h2 className="text-gray-800 text-2xl">Seus grupos</h2>
 
           <div className="space-y-8 h-[30rem] overflow-y-scroll">
-            {groups.map((grupo, index) => (
+            {groups.map((grup) => (
               <div
-                key={grupo.id}
-                className="bg-gray-600 w-auto h-16 rounded flex justify-between p-4 items-center"
+                key={grup.id}
+                onClick={() => setGroupIdActive(grup.id)}
+                className="bg-gray-600 w-auto h-16 rounded flex justify-between p-4 items-center cursor-pointer"
               >
-                <h3 className="text-gray-100 text-1xl">{grupo.name}</h3>
+                <h3 className="text-gray-100 text-1xl">{grup.name}</h3>
                 <span className="text-gray-100 text-1xl">
-                  5 pessoas cadastradas
+                  {`${grup.contacts?.length || 0} contatos`}
                 </span>
               </div>
             ))}
@@ -122,32 +134,23 @@ export default function UserPage() {
       </div>
 
       <div className="flex flex-1 items-center justify-center">
-        <div className="w-[40rem]">
+        <div className="w-full lg:w-[40rem]">
           <Table isStriped aria-label="Example static collection table">
-            <TableHeader className="bg-gray-600" w-full h-full>
+            <TableHeader className="bg-gray-600">
               <TableColumn>NOME</TableColumn>
               <TableColumn>NÚMERO</TableColumn>
             </TableHeader>
             <TableBody
-              w-full
-              h-fullemptyContent={'Nenhuma contato nesse grupo.'}
+              emptyContent={'Nenhum contato nesse grupo.'}
             >
-              <TableRow key="1">
-                <TableCell>Tony Reichert</TableCell>
-                <TableCell>84988596033</TableCell>
-              </TableRow>
-              <TableRow key="2">
-                <TableCell>Zoey Lang</TableCell>
-                <TableCell>84988596033</TableCell>
-              </TableRow>
-              <TableRow key="3">
-                <TableCell>Jane Fisher</TableCell>
-                <TableCell>84988596033</TableCell>
-              </TableRow>
-              <TableRow key="4">
-                <TableCell>William Howard</TableCell>
-                <TableCell>84988596033</TableCell>
-              </TableRow>
+              {filteredGroups.flatMap((group) =>
+                group.contacts.map((contact) => (
+                  <TableRow key={contact.phoneNumber}>
+                    <TableCell>{contact.name}</TableCell>
+                    <TableCell>{contact.phoneNumber}</TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -160,7 +163,7 @@ export default function UserPage() {
               <ModalHeader className="flex flex-col gap-1 text-2xl">
                 Crie um novo grupo
               </ModalHeader>
-              <ModalBody className="flexw-full h-64 flex-wrap md:flex-nowrap gap-4">
+              <ModalBody className="flex w-full h-64 flex-wrap md:flex-nowrap gap-4">
                 <div className="flex flex-col w-full flex-wrap md:flex-nowrap gap-4">
                   <label className="flex flex-col">
                     Qual o nome do grupo?
@@ -187,7 +190,7 @@ export default function UserPage() {
                   Fechar
                 </Button>
                 <Button
-                  onClick={() => handleCreateGroup()}
+                  onClick={handleCreateGroup}
                   className="text-gray-900"
                   onPress={onClose}
                 >

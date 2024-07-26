@@ -19,7 +19,7 @@ export class Group {
   @Column()
   name: String;
 
-  @OneToMany(() => Contact, (contact) => contact.group)
+  @OneToMany(() => Contact, (contact) => contact.group, { onDelete: 'CASCADE' })
   contacts: Contact[];
 
   @ManyToOne(() => User, (user) => user.groups)
