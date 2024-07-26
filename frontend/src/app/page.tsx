@@ -14,7 +14,9 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    login();
+    () => {
+      login()
+    };
   }, []);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
@@ -30,7 +32,7 @@ export default function Home() {
     const userId = window.localStorage.getItem('userId');
 
     setIsLoading(false);
-    router.push(`/user/${userId}`);
+    login()
   }
 
   return (

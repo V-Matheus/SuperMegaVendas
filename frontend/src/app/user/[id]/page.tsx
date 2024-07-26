@@ -22,33 +22,54 @@ import {
 } from '@nextui-org/react';
 import { useEffect, useState } from 'react';
 import { getGroups } from '@/services/getGroups';
+import { createGroup } from '@/services/createGroup';
+import { Groupo } from '@/services/types';
 
 export default function UserPage() {
-  const { id } = useParams();
+  const [userId, setUserId] = useState<string | null>(null);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState<Groupo[]>([]);
+  const [name, setName] = useState('');
+
+  useEffect(() => {
+    const storedUserId = window.localStorage.getItem('userId');
+    if (storedUserId) {
+      setUserId(storedUserId);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data, erros } = await getGroups(id);
+        const { data, erros } = await getGroups(userId);
         console.log(data);
-        
 
         if (erros) {
           throw new Error(erros.statusText);
         }
 
-        setGroups(data)
+        setGroups((prevGroups) => [...prevGroups, data]);
       } catch (error) {
         console.error(error);
       }
-    };
-
-    if (id) {
       fetchData();
+    };
+  }, [userId]);
+
+  async function handleCreateGroup() {
+    try {
+      const { data, erros } = await createGroup({ name, userId });
+      setGroups((prevGroups) => [...prevGroups, data]);
+
+      if (erros) {
+        throw new Error(erros.statusText);
+      }
+
+      // setGroups(data);
+    } catch (error) {
+      console.error(error);
     }
-  }, [id]);
+  }
 
   return (
     <main className="flex h-screen">
@@ -59,10 +80,10 @@ export default function UserPage() {
           <div className="space-y-8 h-[30rem] overflow-y-scroll">
             {groups.map((grupo, index) => (
               <div
-                key={index}
+                key={grupo.id}
                 className="bg-gray-600 w-auto h-16 rounded flex justify-between p-4 items-center"
               >
-                <h3 className="text-gray-100 text-1xl">Grupo {index + 1}</h3>
+                <h3 className="text-gray-100 text-1xl">{grupo.name}</h3>
                 <span className="text-gray-100 text-1xl">
                   5 pessoas cadastradas
                 </span>
@@ -74,7 +95,6 @@ export default function UserPage() {
             <Button
               onPress={onOpen}
               className="py-4 px-8 rounded bg-gray-600 text-gray-200 flex-1"
-              type="submit"
             >
               CRIAR GRUPO
             </Button>
@@ -126,6 +146,8 @@ export default function UserPage() {
                   <label className="flex flex-col">
                     Qual o nome do grupo?
                     <input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
                       className="mt-4 px-4 py-2 border-solid border-2 border-gray-800/50 rounded"
                       type="text"
                     />
@@ -141,7 +163,11 @@ export default function UserPage() {
                 <Button color="danger" variant="light" onPress={onClose}>
                   Fechar
                 </Button>
-                <Button className="text-gray-900" onPress={onClose}>
+                <Button
+                  onClick={() => handleCreateGroup()}
+                  className="text-gray-900"
+                  onPress={onClose}
+                >
                   Enviar
                 </Button>
               </ModalFooter>
