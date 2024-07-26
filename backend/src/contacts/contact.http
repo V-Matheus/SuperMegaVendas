@@ -24,4 +24,4 @@ Content-Type: application/json
 }
 
 ### delete contacts
-DELETE http://localhost:3333/contacts/contact_5TrQ6YbtPy4UD9SVXNTTL
+DELETE http://localhost:3333/contacts/contact_wbIMtRUuxp5ySIz7GjvFo
